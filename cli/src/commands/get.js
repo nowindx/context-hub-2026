@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import { getEntry, resolveDocPath, resolveEntryFile } from '../lib/registry.js';
 import { fetchDoc, fetchDocFull } from '../lib/cache.js';
 import { output, error, info } from '../lib/output.js';
+import { trackEvent } from '../lib/analytics.js';
 
 /**
  * Core fetch logic shared by `get docs` and `get skills`.
@@ -59,6 +60,15 @@ async function fetchEntries(type, ids, opts, globalOpts) {
     } catch (err) {
       error(err.message, globalOpts);
     }
+  }
+
+  // Track fetches
+  for (const r of results) {
+    trackEvent(type === 'doc' ? 'doc_fetched' : 'skill_fetched', {
+      entry_id: r.id,
+      full: !!opts.full,
+      lang: opts.lang || undefined,
+    }).catch(() => {});
   }
 
   // Output

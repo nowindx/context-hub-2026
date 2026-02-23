@@ -10,6 +10,7 @@ import { registerSearchCommand } from './commands/search.js';
 import { registerGetCommand } from './commands/get.js';
 import { registerBuildCommand } from './commands/build.js';
 import { registerFeedbackCommand } from './commands/feedback.js';
+import { trackEvent, shutdownAnalytics } from './lib/analytics.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const pkg = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), 'utf8'));
@@ -88,6 +89,10 @@ const SKIP_REGISTRY = ['update', 'cache', 'build', 'feedback', 'help'];
 
 program.hook('preAction', async (thisCommand) => {
   const cmdName = thisCommand.args?.[0] || thisCommand.name();
+  // Track command usage (fire-and-forget, never blocks)
+  if (cmdName !== 'chub') {
+    trackEvent('command_run', { command: cmdName }).catch(() => {});
+  }
   if (SKIP_REGISTRY.includes(cmdName)) return;
   if (thisCommand.parent?.name() === 'cache') return;
   // Don't fetch registry for default action (no command)
@@ -109,3 +114,6 @@ registerBuildCommand(program);
 registerFeedbackCommand(program);
 
 program.parse();
+
+// Flush analytics before exit (best-effort)
+process.on('beforeExit', () => shutdownAnalytics().catch(() => {}));

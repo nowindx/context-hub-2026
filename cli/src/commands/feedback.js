@@ -6,6 +6,7 @@ import { getEntry } from '../lib/registry.js';
 import { sendFeedback, isTelemetryEnabled, getTelemetryUrl } from '../lib/telemetry.js';
 import { getOrCreateClientId } from '../lib/identity.js';
 import { output, error } from '../lib/output.js';
+import { trackEvent } from '../lib/analytics.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -130,7 +131,10 @@ export function registerFeedbackCommand(program) {
         source,
       });
 
-      // BUG #3 FIX: Show error in human mode, not silent
+      if (result.status === 'sent') {
+        trackEvent('feedback_sent', { entry_id: id, rating, entry_type: entryType }).catch(() => {});
+      }
+
       output(result, (data) => {
         if (data.status === 'sent') {
           const parts = [chalk.green(`Feedback recorded for ${id}`)];

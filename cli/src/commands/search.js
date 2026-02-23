@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import { searchEntries, listEntries, getEntry, getDisplayId, isMultiSource } from '../lib/registry.js';
 import { displayLanguage } from '../lib/normalize.js';
 import { output } from '../lib/output.js';
+import { trackEvent } from '../lib/analytics.js';
 
 function formatEntryList(entries) {
   const multi = isMultiSource();
@@ -93,6 +94,12 @@ export function registerSearchCommand(program) {
 
       // Fuzzy search
       const results = searchEntries(query, opts).slice(0, limit);
+      trackEvent('search', {
+        query_length: query.length,
+        result_count: results.length,
+        has_tags: !!opts.tags,
+        has_lang: !!opts.lang,
+      }).catch(() => {});
       output({ results, total: results.length, query }, (data) => {
         if (data.results.length === 0) {
           console.log(chalk.yellow(`No results for "${query}".`));
