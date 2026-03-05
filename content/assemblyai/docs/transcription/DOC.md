@@ -33,7 +33,7 @@ npm install assemblyai
 
 ### yarn
 ```bash
-yarn add assemblyaifkdsjklfjd
+yarn add assemblyai
 ```
 
 ### pnpm

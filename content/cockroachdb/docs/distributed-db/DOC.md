@@ -529,12 +529,12 @@ deleteUser('123e4567-e89b-12d3-a456-426614174000');
 async function deleteInactiveUsers(daysInactive) {
   const client = await pool.connect();
   try {
-    const query = `
-      DELETE FROM users
-      WHERE last_login < now() - interval '${daysInactive} days'
-      RETURNING id, email
-    `;
-    const result = await client.query(query);
+    const result = await client.query(
+      `DELETE FROM users
+       WHERE last_login < now() - make_interval(days => $1)
+       RETURNING id, email`,
+      [daysInactive]
+    );
     console.log(`Deleted ${result.rowCount} inactive users`);
     return result.rows;
   } finally {

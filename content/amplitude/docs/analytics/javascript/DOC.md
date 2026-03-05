@@ -884,7 +884,7 @@ const middlewarePlugin = {
   name: 'middleware',
   type: 'before',
   execute: async (event) => {
-    return middlewareMiddleware(event);
+    return timestampMiddleware(event);
   }
 };
 

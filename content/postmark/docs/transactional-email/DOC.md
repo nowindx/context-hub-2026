@@ -94,7 +94,7 @@ Before sending emails with Postmark:
 Send a basic email with HTML and text body:
 
 ```javascript
-const postmark = require('@postmark');
+const postmark = require('postmark');
 const client = new postmark.ServerClient(process.env.POSTMARK_SERVER_TOKEN);
 
 client.sendEmail({
