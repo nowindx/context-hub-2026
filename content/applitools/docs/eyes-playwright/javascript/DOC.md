@@ -65,7 +65,6 @@ import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
   reporter: [
-    ['html'],
     ['@applitools/eyes-playwright/reporter']
   ],
   use: {
@@ -167,8 +166,8 @@ export const test = mergeTests(base, eyesTest);
 
 | Option | Default | Notes |
 | :--- | :--- | :--- |
-| `apiKey` | `APPLITOOLS_API_KEY` env var | Never hardcode. |
-| `appName` | `'My App'` | Set to your app name for dashboard grouping. |
+| `apiKey` | `APPLITOOLS_API_KEY` env var | Never hardcode (unless it's an untracked file). |
+| `appName` | `'My App'` | Set to your app name for dashboard grouping (default - package.json `name` field). |
 | `matchLevel` | `'Strict'` | See Match Levels above. |
 | `failTestsOnDiff` | `'afterAll'` in CI, `'afterEach'` locally | See CI/CD strategy above. |
 | `ignoreDisplacements` | `false` | Set `true` to suppress vertical shift noise. |
